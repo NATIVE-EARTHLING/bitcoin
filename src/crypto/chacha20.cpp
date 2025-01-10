@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2022 The Bitcoin Core developers
+// Copyright (c) 2017-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,29 +11,28 @@
 #include <span.h>
 
 #include <algorithm>
+#include <bit>
 #include <string.h>
 
-constexpr static inline uint32_t rotl32(uint32_t v, int c) { return (v << c) | (v >> (32 - c)); }
-
 #define QUARTERROUND(a,b,c,d) \
-  a += b; d = rotl32(d ^ a, 16); \
-  c += d; b = rotl32(b ^ c, 12); \
-  a += b; d = rotl32(d ^ a, 8); \
-  c += d; b = rotl32(b ^ c, 7);
+  a += b; d = std::rotl(d ^ a, 16); \
+  c += d; b = std::rotl(b ^ c, 12); \
+  a += b; d = std::rotl(d ^ a, 8); \
+  c += d; b = std::rotl(b ^ c, 7);
 
 #define REPEAT10(a) do { {a}; {a}; {a}; {a}; {a}; {a}; {a}; {a}; {a}; {a}; } while(0)
 
 void ChaCha20Aligned::SetKey(Span<const std::byte> key) noexcept
 {
     assert(key.size() == KEYLEN);
-    input[0] = ReadLE32(UCharCast(key.data() + 0));
-    input[1] = ReadLE32(UCharCast(key.data() + 4));
-    input[2] = ReadLE32(UCharCast(key.data() + 8));
-    input[3] = ReadLE32(UCharCast(key.data() + 12));
-    input[4] = ReadLE32(UCharCast(key.data() + 16));
-    input[5] = ReadLE32(UCharCast(key.data() + 20));
-    input[6] = ReadLE32(UCharCast(key.data() + 24));
-    input[7] = ReadLE32(UCharCast(key.data() + 28));
+    input[0] = ReadLE32(key.data() + 0);
+    input[1] = ReadLE32(key.data() + 4);
+    input[2] = ReadLE32(key.data() + 8);
+    input[3] = ReadLE32(key.data() + 12);
+    input[4] = ReadLE32(key.data() + 16);
+    input[5] = ReadLE32(key.data() + 20);
+    input[6] = ReadLE32(key.data() + 24);
+    input[7] = ReadLE32(key.data() + 28);
     input[8] = 0;
     input[9] = 0;
     input[10] = 0;
